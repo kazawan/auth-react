@@ -1,7 +1,16 @@
 import { Link } from "react-router-dom"
-
+import { useAuth } from "../useAuth"
+import {useNavigate }from 'react-router-dom';
 export default function Navi() {
+    const {removeLogout,checkLogin} = useAuth();   
+    const Navigate = useNavigate()
+    const handleLogout = () => {
+        removeLogout()
+        checkLogin()
+        Navigate('/')
 
+    }
+    
     return (
         <div>
             <nav className="bg-gray-800 p-4">
@@ -12,6 +21,7 @@ export default function Navi() {
                         <li><Link to="/about" className=" text-lg mx-2">About</Link></li>
                         <li><Link to="/login" className=" text-lg mx-2">Login</Link></li>
                         <li><Link to="/register" className=" text-lg mx-2">Regsiter</Link></li>
+                        <li onClick={handleLogout} >logut</li>
                     </ul>
                 </div>
             </nav>
