@@ -7,6 +7,8 @@ export function saveLogin(data,callback) {
     localStorage.setItem('refreshTokenExp', data.refreshTokenExp);
     localStorage.setItem('refreshTokenCreateAt', data.refreshTokenCreateAt);
     localStorage.setItem('isLogin', true);
+    localStorage.setItem('email', data.email);  
+    
     callback();
 }
 
@@ -19,5 +21,6 @@ export function removeLogout(callback) {
     localStorage.removeItem('isLogin');
     localStorage.removeItem('accessTokenCreateAt');
     localStorage.removeItem('refreshTokenCreateAt');
+    localStorage.removeItem('email');
     callback();
 }

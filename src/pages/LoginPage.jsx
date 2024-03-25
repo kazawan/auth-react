@@ -6,8 +6,8 @@ import { useAuth } from "../useAuth"
 import {useNavigate }from 'react-router-dom';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('kazawan@qq.com')
-    const [password, setPassword] = useState('kazawan')
+    const [email, setEmail] = useState('bob@qq.com')
+    const [password, setPassword] = useState('bob')
     const { msg } = useToast()
     const {user,setUser,saveLogin} = useAuth()
     const navigate = useNavigate()

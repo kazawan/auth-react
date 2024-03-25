@@ -9,9 +9,9 @@ import {useNavigate }from 'react-router-dom';
 export default function RegsiterPage() {
     const navigate = useNavigate();
     const {msg} = useToast();
-    const [email,setEmail] = useState('kazawan@qq.com');
-    const [username,setUsername] = useState('kazawan');
-    const [password,setPassword] = useState('kazawan');
+    const [email,setEmail] = useState('bob@qq.com');
+    const [username,setUsername] = useState('bob');
+    const [password,setPassword] = useState('bob');
     const handleRegsiter = async () => {
         const data = await userRegsiter(email,username,password);
         console.log(data)

@@ -33,16 +33,72 @@ export const userLogin = async (email, password) => {
     return data
 }
 
+const refreshAccessTokenUrl = 'http://localhost:3000/auth/refreshToken';
+// body: {refreshToken}
+export const refreshAccessToken = async () => {
+    console.log('Refreshing access token');
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    const data = await axios.post(refreshAccessTokenUrl, {
+        refreshToken,
+        accessToken
+    }).then(res => res.data)
+    return data
+}
+
+const LogoutUrl = 'http://localhost:3000/auth/logout';
+export const userLogout = async (checkLogin) => {
+    console.log('Logging out user');
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    const data = await axios.post(LogoutUrl, {
+        accessToken,
+        refreshToken
+    }).then(res => res.data)
+    if (checkLogin && typeof checkLogin === 'function') {
+        rl(checkLogin);
+        
+
+    }
+
+    return data
+}
+
+
+const GetAllUserTodoUrl = 'http://localhost:3000/todo/all';
+export const getAllUserTodo = async () => {
+    const email = localStorage.getItem('email');
+    const accessToken = localStorage.getItem('accessToken');
+    const todos = await axios.post(GetAllUserTodoUrl, {
+        email,
+        accessToken
+    }).then(res => res.data)
+    return todos
+}
 
 
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(localStorage.getItem('username') || '');
-    const [isLogin, setIsLogin] = useState( localStorage.getItem('isLogin') ? true : false);
-    const {msg} = Toast();
+    const [isLogin, setIsLogin] = useState(localStorage.getItem('isLogin') ? true : false);
+    const [todos, setTodos] = useState([]);
+    const { msg } = Toast();
     useEffect(() => {
         checkLogin()
+        todosGET()
+
     }, [])
+
+
+    const todosGET = async () => {
+        const data = await getAllUserTodo();
+        console.log(data)
+        if (data.code === 200) {
+            setTodos(data.data.todos);
+        } else {
+            msg().error(data.message);
+        }
+    }
 
     const saveLogin = (data) => {
         sl(data, checkLogin);
@@ -65,20 +121,49 @@ export function AuthProvider({ children }) {
         } else {
             setUser('');
             setIsLogin(false);
+            setTodos([]);
 
         }
     }
 
-    const expCheck = () => {
+
+
+    const expCheck = async () => {
+        if (!localStorage.getItem('accessToken') || !isLogin) {
+            return;
+        }
         const accessTokenCreateAt = localStorage.getItem('accessTokenCreateAt');
         const accessTokenExp = localStorage.getItem('accessTokenExp');
-        const refreshTokenCreateAt = localStorage.getItem('refreshTokenCreateAt');
+        const refreshToken = localStorage.getItem('refreshToken');
         const refreshTokenExp = localStorage.getItem('refreshTokenExp');
+        const refreshTokenCreateAt = localStorage.getItem('refreshTokenCreateAt');
+
+
         const now = new Date().getTime();
-        if (now - accessTokenCreateAt > 1000 * 3) {
-            // console.log('access token expired');
-            msg().error('access token expired');
+        if (now - refreshTokenCreateAt > refreshTokenExp) {
+            // console.log('refresh token expired');
+            msg().info('refresh token expired');
+            // 这里直接登出
+            await userLogout();
             rl(checkLogin);
+            return
+        }
+        if (now - accessTokenCreateAt > accessTokenExp) {
+            // console.log('access token expired');
+            msg().info('更新access token');
+            // 重新请求access token
+            const data = await refreshAccessToken(localStorage.getItem('refreshToken'));
+            // console.log(data);
+            if (data.code === 200) {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('accessTokenExp', data.accessTokenExp);
+                localStorage.setItem('accessTokenCreateAt', data.accessTokenCreateAt);
+            } else {
+                // 这里直接登出
+                msg().error(data.message);
+                rl(checkLogin);
+            }
+
         }
     }
 
@@ -95,7 +180,10 @@ export function AuthProvider({ children }) {
                 saveLogin,
                 removeLogout,
                 checkLogin,
-                expCheck
+                expCheck,
+                todos, 
+                setTodos,
+                todosGET,
             }
         }
 
