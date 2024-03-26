@@ -67,10 +67,8 @@ export const userLogout = async (checkLogin) => {
 
 const GetAllUserTodoUrl = 'http://localhost:3000/todo/all';
 export const getAllUserTodo = async () => {
-    const email = localStorage.getItem('email');
     const accessToken = localStorage.getItem('accessToken');
     const todos = await axios.post(GetAllUserTodoUrl, {
-        email,
         accessToken
     }).then(res => res.data)
     return todos
