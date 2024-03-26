@@ -21,7 +21,7 @@ export default function Navi() {
                     
                     <ul className="flex">
                         <li><Link to="/" className=" text-lg mx-2">Home</Link></li>
-                        <li><Link to="/about" className=" text-lg mx-2">About</Link></li>
+                        <li><Link to="/todos" className=" text-lg mx-2">Todos</Link></li>
                         <li><Link to="/login" className=" text-lg mx-2">Login</Link></li>
                         <li><Link to="/register" className=" text-lg mx-2">Regsiter</Link></li>
                         <li onClick={handleLogout} >logut</li>

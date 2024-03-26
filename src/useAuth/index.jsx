@@ -83,7 +83,7 @@ export function AuthProvider({ children }) {
     const { msg } = Toast();
     useEffect(() => {
         checkLogin()
-        todosGET()
+        // todosGET()
 
     }, [])
 
